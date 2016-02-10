@@ -4,11 +4,13 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	double *yy, *YY;
-	double *X, *Y;
-	int *x;
+	double *xx, *XX;
+	double *y, *Y;
+	double *x, *X;
+	
 	int m1, n1;
 	int m2, n2;
-	double *SZ1, *SZ2;
+	int m3, n3;
 
 	/* parse input arguments */
 	X  = mxGetPr(prhs[0]);
@@ -21,30 +23,33 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	n2 = mxGetN(prhs[1]);
 	int l2 = m2 * n2;
 
-	SZ1  = mxGetPr(prhs[2]);
-	SZ2  = mxGetPr(prhs[3]);
-	int sz1 = (int)SZ1[0];
-	int sz2 = (int)SZ2[0];
+	XX  = mxGetPr(prhs[2]);
+	m3 = mxGetM(prhs[2]);
+	n3 = mxGetN(prhs[2]);
+	int l3 = m3 * n3;
 
 	/* initialize arrays */
-	yy = new double[(int)*SZ2];
-	YY = new double[(int)*SZ2];
-	x = new int[sz1];
+	x  = new double[l1];
+	y  = new double[l1];
+	yy = new double[l3];
+	// YY = new double[l3];
+	// x = new int[sz1];
 
 
-	for (int i = 0; i < sz1; i++)
+	for (int i = 0; i < l1; i++) {
 		x[i] = X[i];
+		y[i] = Y[i];
+	}
 
 	/* create output arguments */
-	plhs[0] = mxCreateDoubleMatrix(1, sz2, mxREAL);
+	plhs[0] = mxCreateDoubleMatrix(1, l3, mxREAL);
 	YY = mxGetPr(plhs[0]);
 
 	/* call core function */
-	spline(yy, x, Y, sz1, sz2);
+	spline(yy, x, y, XX, l1, l3);
 
-
-
-	for(int i = 0; i < (int)*SZ2; i++) {
+	for(int i = 0; i < l3; i++) {
+		// YY[i] = 0;
 		YY[i] = yy[i];
 	}
 
